@@ -1,0 +1,122 @@
+select * from `workspace`.`default`.`bright_tv_user_profiles` limit 100;
+
+SELECT * FROM `workspace`.`default`.`bright_tv_viewership` limit 100;
+
+---Joining the two tables
+SELECT 
+    A.Channel2,
+    DATEADD(hour, 2, A.RecordDate2) AS SAST_Time,
+    B.Age,
+    B.Gender,
+    B.Race
+FROM `workspace`.`default`.`bright_tv_viewership` AS A
+LEFT JOIN `workspace`.`default`.`bright_tv_user_profiles` AS B
+    ON A.UserID0 = B.UserID;
+
+---checking the names of channels
+SELECT DISTINCT channel2
+FROM `workspace`.`default`.`bright_tv_viewership`;
+
+---Checking the record date
+SELECT MIN(Recorddate2) AS start_date
+FROM `workspace`.`default`.`bright_tv_viewership`;
+
+-----------------------------------------------------
+----Dates
+SELECT 
+    Recorddate2,
+    date_format(Recorddate2, 'HH:mm:ss') AS time_of_day,
+    CASE
+        WHEN date_format(Recorddate2, 'HH:mm:ss') BETWEEN '00:00:00' AND '11:59:59' THEN '01. Morning'
+        WHEN date_format(Recorddate2, 'HH:mm:ss') BETWEEN '12:00:00' AND '16:59:59' THEN '02. Afternoon'
+        WHEN date_format(Recorddate2, 'HH:mm:ss') >= '17:00:00' THEN '03. Evening'
+    END AS time_buckets
+FROM `workspace`.`default`.`bright_tv_viewership`;
+
+-----------------------------------------------------
+SELECT 
+      COUNT(*) AS number_of_rows,
+      COUNT(DISTINCT UserID) AS number_of_viewers
+FROM `workspace`.`default`.`bright_tv_viewership`;
+
+---viewers by date
+SELECT 
+    TO_DATE(DATEADD(hour, 2, RecordDate2)) AS Date,
+    COUNT(DISTINCT userID) AS Daily_Viewers
+FROM `workspace`.`default`.`bright_tv_viewership`
+GROUP BY TO_DATE(DATEADD(hour, 2, RecordDate2))
+ORDER BY Date;
+
+---viewers by gender
+SELECT 
+    B.Gender,
+    COUNT(DISTINCT A.userID) AS Viewers
+FROM `workspace`.`default`.`bright_tv_viewership` A
+LEFT JOIN `workspace`.`default`.`bright_tv_user_profiles` B
+    ON A.userID = B.userID
+GROUP BY B.Gender;
+
+SELECT 
+    -- Age Groups
+    CASE 
+        WHEN B.Age BETWEEN 0 AND 17 THEN 'Minor'
+        WHEN B.Age BETWEEN 18 AND 35 THEN 'Youth'
+        WHEN B.Age BETWEEN 36 AND 39 THEN 'Adult'
+        WHEN B.Age BETWEEN 40 AND 59 THEN 'Middle Aged Adult'
+        WHEN B.Age BETWEEN 60 AND 64 THEN 'Mature Adult'
+        ELSE 'Senior'
+    END AS Age_Group,
+
+    B.Race,
+    B.Gender,
+    B.Province,
+    A.Channel2,
+
+    -- Time Buckets (SAST)
+    CASE 
+        WHEN HOUR(DATEADD(hour, 2, A.RecordDate2)) BETWEEN 0 AND 5 THEN 'Late Night'
+        WHEN HOUR(DATEADD(hour, 2, A.RecordDate2)) BETWEEN 6 AND 11 THEN 'Morning'
+        WHEN HOUR(DATEADD(hour, 2, A.RecordDate2)) BETWEEN 12 AND 17 THEN 'Afternoon'
+        WHEN HOUR(DATEADD(hour, 2, A.RecordDate2)) BETWEEN 18 AND 23 THEN 'Evening'
+    END AS Time_Bucket,
+
+    -- Date (SAST)
+    TO_DATE(DATEADD(hour, 2, A.RecordDate2)) AS Date,
+
+    COUNT(DISTINCT A.userID) AS Viewers
+
+FROM `workspace`.`default`.`bright_tv_viewership` A
+LEFT JOIN `workspace`.`default`.`bright_tv_user_profiles` B
+    ON A.userID = B.userID
+
+-- Remove NULLs
+WHERE 
+    B.Age IS NOT NULL
+    AND B.Race IS NOT NULL
+    AND B.Gender IS NOT NULL
+    AND B.Province IS NOT NULL
+    AND A.Channel2 IS NOT NULL
+    AND A.RecordDate2 IS NOT NULL
+
+GROUP BY 
+    CASE 
+        WHEN B.Age BETWEEN 0 AND 17 THEN 'Minor'
+        WHEN B.Age BETWEEN 18 AND 35 THEN 'Youth'
+        WHEN B.Age BETWEEN 36 AND 39 THEN 'Adult'
+        WHEN B.Age BETWEEN 40 AND 59 THEN 'Middle Aged Adult'
+        WHEN B.Age BETWEEN 60 AND 64 THEN 'Mature Adult'
+        ELSE 'Senior'
+    END,
+    B.Race,
+    B.Gender,
+    B.Province,
+    A.Channel2,
+    CASE 
+        WHEN HOUR(DATEADD(hour, 2, A.RecordDate2)) BETWEEN 0 AND 5 THEN 'Late Night'
+        WHEN HOUR(DATEADD(hour, 2, A.RecordDate2)) BETWEEN 6 AND 11 THEN 'Morning'
+        WHEN HOUR(DATEADD(hour, 2, A.RecordDate2)) BETWEEN 12 AND 17 THEN 'Afternoon'
+        WHEN HOUR(DATEADD(hour, 2, A.RecordDate2)) BETWEEN 18 AND 23 THEN 'Evening'
+    END,
+    TO_DATE(DATEADD(hour, 2, A.RecordDate2))
+
+ORDER BY Viewers DESC;
