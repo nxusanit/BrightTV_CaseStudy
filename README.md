@@ -72,7 +72,7 @@ Time availability (evenings & weekends)
 Content relevance and quality
 User engagement maturity
 Ease of access and personalised recommendations
-🎬 Content Recommendations
+Content Recommendations
 
 To increase consumption during low-engagement periods:
 
@@ -85,28 +85,30 @@ Sports or live shows to create urgency
 4. Personalised Content
 “Recommended for you”
 “Continue watching” features
-🚀 Growth Initiatives
-📌 Acquisition
+ Growth Initiatives
+
+ Acquisition
 Partnerships (telcos, ISPs, device manufacturers)
 Referral programmes
 Free trial campaigns
-🔄 Retention (CVM Focus)
+   Retention (CVM Focus)
 Behaviour-based segmentation:
 High-value users
 At-risk users
 New users
 Targeted engagement campaigns
-💰 Upsell & Cross-Sell
+   Upsell & Cross-Sell
 Premium content tiers
 Add-on subscriptions (e.g., sports, movies)
-📏 Key Metrics to Track
+Key Metrics to Track
 Daily Active Users (DAU)
 Monthly Active Users (MAU)
 Churn rate
 Average session duration
 Revenue per user
 Engagement rate
-🏁 Conclusion
+
+Conclusion
 
 BrightTV can significantly grow its subscription base by:
 
